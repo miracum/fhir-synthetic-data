@@ -1,19 +1,21 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  fhir_node1:
+  fhir_node:
     image: ghcr.io/samply/blaze:latest
     container_name: fhir-node
-    volumes:
-      - synthea-output-data:/output
-    networks:
-      - blaze_network
-    expose:
-      - "8080"
+    restart: unless-stopped
     environment:
       - BLAZECTL_SERVER=${BLAZECTL_SERVER}
       - BLAZECTL_USER=${BLAZECTL_USER}
       - BLAZECTL_PASSWORD=${BLAZECTL_PASSWORD}
+    volumes:
+      - blaze-data:/app/data                # persistent Blaze DB
+      - synthea-output-data:/output         # your Synthea-generated volume
+    expose:
+      - "8080"
+    networks:
+      - blaze_network
 
   nginx:
     image: nginx:latest
@@ -21,11 +23,13 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/ssl/private:ro
       - ./env/auth/.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
-      - fhir_node1
+      - fhir_node
     networks:
       - blaze_network
 
@@ -34,4 +38,5 @@ networks:
     driver: bridge
 
 volumes:
+  blaze-data:
   synthea-output-data:
