@@ -1,0 +1,10 @@
+FROM ghcr.io/samply/blaze:latest
+
+USER root
+
+# Install curl and blazectl
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -sSfL https://raw.githubusercontent.com/samply/blazectl/main/install.sh | sh && \
+    mv blazectl /usr/local/bin/ && chmod +x /usr/local/bin/blazectl && \
+    apt-get purge -y curl && apt-get autoremove -y && apt-get clean
