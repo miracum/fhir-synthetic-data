@@ -10,8 +10,8 @@ services:
       - BLAZECTL_USER=${BLAZECTL_USER}
       - BLAZECTL_PASSWORD=${BLAZECTL_PASSWORD}
     volumes:
-      - blaze-data:/app/data                # persistent Blaze DB
-      - synthea-output-data:/output         # your Synthea-generated volume
+      - blaze-data:/app/data
+      - synthea-output-data:/output
     expose:
       - "8080"
     networks:
@@ -27,7 +27,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/ssl/private:ro
-      - ./env/auth/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./auth/.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
       - fhir_node
     networks:
