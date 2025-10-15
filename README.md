@@ -29,24 +29,24 @@ Include the generated *Dockerfile* from Synthea toolkit in the project's directo
 
 ```
 docker build -t syntheadocker -f Dockerfile .
-docker run -v $(pwd)/data/synthea-output-data:/output -it syntheadocker
+docker run -v "${PWD}/data/synthea-output-data:/output" -it syntheadocker
 ```
 
 ### Create your own certificates and credentials
 
-For a HTTPS certificate 
+For an HTTPS certificate run in **Bash**.
 ```dash
-mkdir -p nginx/certs                                                                                                               
-openssl req -x509 -newkey rsa:4096 -nodes \                                                                                                                                                                       
-   -keyout nginx/certs/privkey.pem \                                                                     
-   -out nginx/certs/fullchain.pem \                                                                      
-   -days 365 \                                                                                           
-   -subj "/CN=localhost"
+mkdir -p nginx/certs
+openssl req -x509 -newkey rsa:4096 -nodes \
+  -keyout nginx/certs/privkey.pem \
+  -out nginx/certs/fullchain.pem \
+  -days 365 \                                                                                           
+  -subj "//CN=localhost"
 ```
 Create `.htpasswd` for basic authentication
 
 ```dash
-docker run --rm -it -v ${PWD}\auth:/auth httpd:2.4 htpasswd -c /env/auth/.htpasswd <yourfantasticusername>
+docker run --rm -it -v ${PWD}\auth:/auth httpd:2.4 htpasswd -c /auth/.htpasswd <yourfantasticusername>
 ```
 <br>
 
@@ -55,6 +55,8 @@ docker run --rm -it -v ${PWD}\auth:/auth httpd:2.4 htpasswd -c /env/auth/.htpass
 > placed in the correct subfolders and fit according to you hostname.
 
 > 💡 NOTE: Ensure your *Synthea* data was successfully generated and placed in the correct subfolder.
+
+> 💡 NOTE: Ensure your defined `.env` locally.
 
 ### Bring the `docker-compose.yaml` up
 
@@ -70,7 +72,7 @@ Build `blazectl` to upload bundles
 docker build -f Dockerfile-blazectl -t blazectl .
 ```
 ```dash
-docker run --rm -v ${PWD}\data\synthea-output-data:/input --network blaze_network blazectl blazectl upload --server http://fhir-node:8080/fhir /input/fhir   
+docker run --rm -v ${PWD}\data\synthea-output-data:/input --network <your-project-network> blazectl blazectl upload --server http://fhir-node:8080/fhir /input/fhir   
 ```
 Open browser and verify your loaded server ‍🚀. 
 
